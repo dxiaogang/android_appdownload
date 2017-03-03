@@ -342,7 +342,7 @@ public class UpdateDownLoaderUtils {
 		 *  下载完成的监听
 		 * @param apkFilePath
 		 */
-		abstract void downloadComplete (String apkFilePath);
+		void downloadComplete (String apkFilePath);
 
 		/**
 		 * 下载大小,状态改变监听
@@ -350,7 +350,7 @@ public class UpdateDownLoaderUtils {
 		 * @param max
 		 * @param state
 		 */
-		abstract void downloadSizeChange (int progress, int max, int state);
+		void downloadSizeChange (int progress, int max, int state);
 
-	};
+	}
 }
