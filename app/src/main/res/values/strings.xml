@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">DownLoadDemo</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="app_status_download">有更新，点击开始下载</string>
+    <string name="app_status_download_fail">下载失败，点击重新下载</string>
+    <string name="download_notification_title">wuxin</string>
+    <string name="download_begin">开始下载</string>
+    <string name="download_fail">下载失败</string>
+    <string name="app_status_pause">暂停</string>
+    <string name="app_status_downloading">正在下载..</string>
+
+</resources>
