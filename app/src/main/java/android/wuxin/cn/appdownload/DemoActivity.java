@@ -1,6 +1,5 @@
 package android.wuxin.cn.appdownload;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.os.Bundle;
@@ -28,7 +27,6 @@ public class DemoActivity extends Activity implements UpdateDownLoaderUtils.Down
     private UpdateHandler handler;
     private UpdateDownLoaderUtils updateDownLoaderUtils;
 
-    @SuppressLint ("InlinedApi")
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,15 +34,15 @@ public class DemoActivity extends Activity implements UpdateDownLoaderUtils.Down
         setContentView(R.layout.activity_main);
         updateDownLoaderUtils = UpdateDownLoaderUtils.getInstance(this);
         updateDownLoaderUtils.setDownloaderCallbackListener(DemoActivity.this);
-        updateDownLoaderUtils.setDescription("正在下载App");
-        updateDownLoaderUtils.setDescriptionTitle("正在下载App");
+        updateDownLoaderUtils.setDescription("downloading apps ...");
+        updateDownLoaderUtils.setDescriptionTitle("downloading apps ...");
         updateDownLoaderUtils.setDownload_filename("wuxin_" + System.currentTimeMillis());
         initView();
         download_start.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick (View v) {
-                updateDownLoaderUtils.openUpdateDownLoader("http://www.ichsy.cn/apps/Hui_Jia_You_ichsy.apk");
+                updateDownLoaderUtils.openUpdateDownLoader("your app urls");
             }
         });
 
@@ -64,7 +62,6 @@ public class DemoActivity extends Activity implements UpdateDownLoaderUtils.Down
         downloadPrecent = (TextView) findViewById(R.id.download_precent);
     }
 
-    @SuppressLint ("HandlerLeak")
     private class UpdateHandler extends Handler {
 
         @Override
