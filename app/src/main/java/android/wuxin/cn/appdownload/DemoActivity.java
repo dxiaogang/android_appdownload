@@ -19,47 +19,47 @@ import android.widget.TextView;
  * @author wuxin<br/>
  */
 public class DemoActivity extends Activity implements UpdateDownLoaderUtils.DownloaderCallbackListener {
-    private Button download_start;
-    private ProgressBar downloadProgress;
-    private TextView downloadSize;
-    private TextView downloadPrecent;
-    private ImageView downloadCancel;
-    private UpdateHandler handler;
-    private UpdateDownLoaderUtils updateDownLoaderUtils;
+    private Button mDownloadStart;
+    private ProgressBar mDownloadProgress;
+    private TextView mDownloadSize;
+    private TextView mDownloadPrecent;
+    private ImageView mDownloadCancel;
+    private UpdateHandler mHandler;
+    private UpdateDownLoaderUtils mUpdateDownLoaderUtils;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        handler = new UpdateHandler();
+        mHandler = new UpdateHandler();
         setContentView(R.layout.activity_main);
-        updateDownLoaderUtils = UpdateDownLoaderUtils.getInstance(this);
-        updateDownLoaderUtils.setDownloaderCallbackListener(DemoActivity.this);
-        updateDownLoaderUtils.setDescription("downloading apps ...");
-        updateDownLoaderUtils.setDescriptionTitle("downloading apps ...");
-        updateDownLoaderUtils.setDownload_filename("wuxin_" + System.currentTimeMillis());
+        mUpdateDownLoaderUtils = UpdateDownLoaderUtils.getInstance(this);
+        mUpdateDownLoaderUtils.setDownloaderCallbackListener(DemoActivity.this);
+        mUpdateDownLoaderUtils.setDescription("downloading apps ...");
+        mUpdateDownLoaderUtils.setDescriptionTitle("downloading apps ...");
+        mUpdateDownLoaderUtils.setDownload_filename("wuxin_" + System.currentTimeMillis());
         initView();
-        download_start.setOnClickListener(new OnClickListener() {
+        mDownloadStart.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick (View v) {
-                updateDownLoaderUtils.openUpdateDownLoader("your app urls");
+                mUpdateDownLoaderUtils.openUpdateDownLoader("your app urls");
             }
         });
 
-        downloadCancel.setOnClickListener(new OnClickListener() {
+        mDownloadCancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick (View v) {
-                updateDownLoaderUtils.cancelCurrentTask(updateDownLoaderUtils.getDownloadId());
+                mUpdateDownLoaderUtils.cancelCurrentTask(mUpdateDownLoaderUtils.getDownloadId());
             }
         });
     }
 
     private void initView () {
-        download_start = (Button) findViewById(R.id.download_start);
-        downloadCancel = (ImageView) findViewById(R.id.download_cancel);
-        downloadProgress = (ProgressBar) findViewById(R.id.download_progress);
-        downloadSize = (TextView) findViewById(R.id.download_size);
-        downloadPrecent = (TextView) findViewById(R.id.download_precent);
+        mDownloadStart = (Button) findViewById(R.id.download_start);
+        mDownloadCancel = (ImageView) findViewById(R.id.download_cancel);
+        mDownloadProgress = (ProgressBar) findViewById(R.id.download_progress);
+        mDownloadSize = (TextView) findViewById(R.id.download_size);
+        mDownloadPrecent = (TextView) findViewById(R.id.download_precent);
     }
 
     private class UpdateHandler extends Handler {
@@ -72,29 +72,29 @@ public class DemoActivity extends Activity implements UpdateDownLoaderUtils.Down
                 case 0:
                     int status = (Integer) msg.obj;
                     if (status != DownloadManager.STATUS_FAILED) {
-                        downloadProgress.setVisibility(View.VISIBLE);
-                        downloadProgress.setMax(0);
-                        downloadProgress.setProgress(0);
-                        downloadSize.setVisibility(View.VISIBLE);
-                        downloadPrecent.setVisibility(View.VISIBLE);
-                        downloadCancel.setVisibility(View.VISIBLE);
+                        mDownloadProgress.setVisibility(View.VISIBLE);
+                        mDownloadProgress.setMax(0);
+                        mDownloadProgress.setProgress(0);
+                        mDownloadSize.setVisibility(View.VISIBLE);
+                        mDownloadPrecent.setVisibility(View.VISIBLE);
+                        mDownloadCancel.setVisibility(View.VISIBLE);
 
                         if (msg.arg2 < 0) {
-                            downloadProgress.setIndeterminate(true);
-                            downloadPrecent.setText("当前已下载：" + "0%");
-                            downloadSize.setText("0M/0M");
+                            mDownloadProgress.setIndeterminate(true);
+                            mDownloadPrecent.setText("当前已下载：" + "0%");
+                            mDownloadSize.setText("0M/0M");
                         } else {
-                            downloadProgress.setIndeterminate(false);
-                            downloadProgress.setMax(msg.arg2);
-                            downloadProgress.setProgress(msg.arg1);
-                            downloadPrecent.setText("当前已下载： " + UpdateDownLoaderUtils.getNotiPercent(msg.arg1, msg.arg2));
-                            downloadSize.setText(UpdateDownLoaderUtils.getAppSize(msg.arg1) + "/" + UpdateDownLoaderUtils.getAppSize(msg.arg2));
+                            mDownloadProgress.setIndeterminate(false);
+                            mDownloadProgress.setMax(msg.arg2);
+                            mDownloadProgress.setProgress(msg.arg1);
+                            mDownloadPrecent.setText("当前已下载： " + UpdateDownLoaderUtils.getNotiPercent(msg.arg1, msg.arg2));
+                            mDownloadSize.setText(UpdateDownLoaderUtils.getAppSize(msg.arg1) + "/" + UpdateDownLoaderUtils.getAppSize(msg.arg2));
                         }
                     } else {
                         Log.d("TAG", "下载失败,请检查网络!");
-                        downloadProgress.setProgress(0);
-                        downloadPrecent.setText("当前已下载： 0%");
-                        downloadSize.setText("0K/" + UpdateDownLoaderUtils.getAppSize(msg.arg2));
+                        mDownloadProgress.setProgress(0);
+                        mDownloadPrecent.setText("当前已下载： 0%");
+                        mDownloadSize.setText("0K/" + UpdateDownLoaderUtils.getAppSize(msg.arg2));
                     }
                     break;
             }
@@ -108,11 +108,11 @@ public class DemoActivity extends Activity implements UpdateDownLoaderUtils.Down
 
     @Override
     public void downloadComplete (String apkFilePath) {
-        updateDownLoaderUtils.install(apkFilePath);
+        mUpdateDownLoaderUtils.install(apkFilePath);
     }
 
     @Override
     public void downloadSizeChange (int progress, int max, int state) {
-        handler.sendMessage(handler.obtainMessage(0, progress, max, state));
+        mHandler.sendMessage(mHandler.obtainMessage(0, progress, max, state));
     }
 }

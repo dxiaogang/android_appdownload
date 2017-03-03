@@ -19,19 +19,19 @@ public class DownloadManagerPro {
     public static final String COLUMN_LOCAL_FILENAME = "local_filename";
     public static final String COLUMN_LOCAL_URI = "local_uri";
 
-    public static final String METHOD_NAME_PAUSE_DOWNLOAD = "pauseDownload";
-    public static final String METHOD_NAME_RESUME_DOWNLOAD = "resumeDownload";
+    public static final String METHOD_NAME_PAUSE_DOWNLOAD = "pause_download";
+    public static final String METHOD_NAME_RESUME_DOWNLOAD = "resume_download";
 
-    private static boolean isInitPauseDownload = false;
-    private static boolean isInitResumeDownload = false;
+    private static boolean isinit_pause_download = false;
+    private static boolean isinit_resume_download = false;
 
-    private static Method pauseDownload = null;
-    private static Method resumeDownload = null;
+    private static Method pause_download = null;
+    private static Method resume_download = null;
 
-    private DownloadManager downloadManager;
+    private DownloadManager mDownloadManager;
 
     public DownloadManagerPro (DownloadManager downloadManager) {
-        this.downloadManager = downloadManager;
+        this.mDownloadManager = downloadManager;
     }
 
     /**
@@ -78,7 +78,7 @@ public class DownloadManagerPro {
         DownloadManager.Query query = new DownloadManager.Query().setFilterById(downloadId);
         Cursor c = null;
         try {
-            c = downloadManager.query(query);
+            c = mDownloadManager.query(query);
             if (c != null && c.moveToFirst()) {
                 bytesAndStatus[0] = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                 bytesAndStatus[1] = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
@@ -101,12 +101,12 @@ public class DownloadManagerPro {
      */
     public int pauseDownload (long... ids) {
         initPauseMethod();
-        if (pauseDownload == null) {
+        if (pause_download == null) {
             return -1;
         }
 
         try {
-            return ((Integer) pauseDownload.invoke(downloadManager, ids)).intValue();
+            return ((Integer) pause_download.invoke(mDownloadManager, ids)).intValue();
         } catch (Exception e) {
             /**
              * accept all exception, include ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
@@ -126,12 +126,12 @@ public class DownloadManagerPro {
      */
     public int resumeDownload (long... ids) {
         initResumeMethod();
-        if (resumeDownload == null) {
+        if (resume_download == null) {
             return -1;
         }
 
         try {
-            return ((Integer) resumeDownload.invoke(downloadManager, ids)).intValue();
+            return ((Integer) resume_download.invoke(mDownloadManager, ids)).intValue();
         } catch (Exception e) {
             /**
              * accept all exception, include ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
@@ -143,24 +143,24 @@ public class DownloadManagerPro {
     }
 
     /**
-     * whether exist pauseDownload and resumeDownload method in {@link DownloadManager}
+     * whether exist pause_download and resume_download method in {@link DownloadManager}
      *
      * @return
      */
     public static boolean isExistPauseAndResumeMethod () {
         initPauseMethod();
         initResumeMethod();
-        return pauseDownload != null && resumeDownload != null;
+        return pause_download != null && resume_download != null;
     }
 
     private static void initPauseMethod () {
-        if (isInitPauseDownload) {
+        if (isinit_pause_download) {
             return;
         }
 
-        isInitPauseDownload = true;
+        isinit_pause_download = true;
         try {
-            pauseDownload = DownloadManager.class.getMethod(METHOD_NAME_PAUSE_DOWNLOAD, long[].class);
+            pause_download = DownloadManager.class.getMethod(METHOD_NAME_PAUSE_DOWNLOAD, long[].class);
         } catch (Exception e) {
             // accept all exception
             e.printStackTrace();
@@ -168,13 +168,13 @@ public class DownloadManagerPro {
     }
 
     private static void initResumeMethod () {
-        if (isInitResumeDownload) {
+        if (isinit_resume_download) {
             return;
         }
 
-        isInitResumeDownload = true;
+        isinit_resume_download = true;
         try {
-            resumeDownload = DownloadManager.class.getMethod(METHOD_NAME_RESUME_DOWNLOAD, long[].class);
+            resume_download = DownloadManager.class.getMethod(METHOD_NAME_RESUME_DOWNLOAD, long[].class);
         } catch (Exception e) {
             // accept all exception
             e.printStackTrace();
@@ -345,7 +345,7 @@ public class DownloadManagerPro {
         String result = null;
         Cursor c = null;
         try {
-            c = downloadManager.query(query);
+            c = mDownloadManager.query(query);
             if (c != null && c.moveToFirst()) {
                 result = c.getString(c.getColumnIndex(columnName));
             }
@@ -370,7 +370,7 @@ public class DownloadManagerPro {
         int result = -1;
         Cursor c = null;
         try {
-            c = downloadManager.query(query);
+            c = mDownloadManager.query(query);
             if (c != null && c.moveToFirst()) {
                 result = c.getInt(c.getColumnIndex(columnName));
             }

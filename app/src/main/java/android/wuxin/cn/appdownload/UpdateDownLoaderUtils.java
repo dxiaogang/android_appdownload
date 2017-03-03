@@ -19,7 +19,7 @@ import java.text.DecimalFormat;
  * @author wuxin<br/>
  */
 public class UpdateDownLoaderUtils {
-	public static final String KEY_NAME_DOWNLOAD_ID = "downloadId";
+	public static final String KEY_NAME_DOWNLOAD_ID = "download_id";
 	/**
 	 * apk 存储文件名
 	 */
@@ -28,19 +28,19 @@ public class UpdateDownLoaderUtils {
 	 * apk 存储文件夹名
 	 */
 	public static String download_floder_name = "cn.wuxin.android";
-	private static DownloadChangeObserver downloadObserver;
-	private DownloadManager downloadManager;
-	private static DownloadManagerPro downloadManagerPro;
-	private static long downloadId = 0;
-	private  Context context;
-	private String description;
-	private String descriptionTitle;
-	private boolean onlyOneTask;
-	private int notifycationVisible = DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
+	private static DownloadChangeObserver download_observer;
+	private static DownloadManagerPro download_manager_pro;
+	private static long download_id = 0;
+	private DownloadManager mDownloadManager;
+	private  Context mContext;
+	private String mDescription;
+	private String mDescriptionTitle;
+	private boolean mOnlyOneTask;
+	private int mVisibilityVisibleNotifyCompleted = DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
 
 	public UpdateDownLoaderUtils(Context context) {
 		super();
-		this.context = context;
+		this.mContext = context;
 	}
 
 	public static final UpdateDownLoaderUtils getInstance(Context context) {
@@ -53,23 +53,23 @@ public class UpdateDownLoaderUtils {
 	 * @param apk_urls
 	 */
 	public void openUpdateDownLoader(String apk_urls) {
-		downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-		downloadManagerPro = new DownloadManagerPro(downloadManager);
-		downloadId = getLong();
-		downloadObserver = new DownloadChangeObserver(null);
-		context.getContentResolver().registerContentObserver(DownloadManagerPro.CONTENT_URI, true, downloadObserver);
+		mDownloadManager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
+		download_manager_pro = new DownloadManagerPro(mDownloadManager);
+		download_id = getLong();
+		download_observer = new DownloadChangeObserver(null);
+		mContext.getContentResolver().registerContentObserver(DownloadManagerPro.CONTENT_URI, true, download_observer);
 		downLoaderStartAndSetNotifycation(apk_urls);
 	}
 
 	private long getLong() {
-		Long downloadId = context.getSharedPreferences("downloadConfig",
+		Long downloadId = mContext.getSharedPreferences("downloadConfig",
 				Context.MODE_PRIVATE).getLong(KEY_NAME_DOWNLOAD_ID, 0);
 		return downloadId;
 	}
 
 	private void putLong() {
-		context.getSharedPreferences("downloadConfig", Context.MODE_PRIVATE)
-				.edit().putLong(KEY_NAME_DOWNLOAD_ID, downloadId).commit();
+		mContext.getSharedPreferences("downloadConfig", Context.MODE_PRIVATE)
+				.edit().putLong(KEY_NAME_DOWNLOAD_ID, download_id).commit();
 	}
 
 	/**
@@ -79,16 +79,16 @@ public class UpdateDownLoaderUtils {
 	 */
 	private void downLoaderStartAndSetNotifycation(String apk_urls) {
 		DownloadManager.Request request = new DownloadManager.Request(Uri.parse(apk_urls));
-		if (downloadId > 0 && onlyOneTask) {
-			downloadManager.remove(downloadId);
+		if (download_id > 0 && mOnlyOneTask) {
+			mDownloadManager.remove(download_id);
 		}
 		request.setDestinationInExternalPublicDir(download_floder_name,download_filename);
-		request.setTitle(descriptionTitle);
-		request.setDescription(description);
-		request.setNotificationVisibility(notifycationVisible);
+		request.setTitle(mDescriptionTitle);
+		request.setDescription(mDescription);
+		request.setNotificationVisibility(mVisibilityVisibleNotifyCompleted);
 		request.setVisibleInDownloadsUi(false);
 		request.setMimeType("application/vnd.android.package-archive");
-		downloadId = downloadManager.enqueue(request);
+		download_id = mDownloadManager.enqueue(request);
 		putLong();
 	}
 
@@ -96,8 +96,8 @@ public class UpdateDownLoaderUtils {
 	 * 获取downloadId 如果downloadId大于0说明已经下载
 	 */
 	public long getDownloadId() {
-		downloadId = getLong();
-		return downloadId;
+		download_id = getLong();
+		return download_id;
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class UpdateDownLoaderUtils {
 	 *            true->删除 false->不删除
 	 */
 	public void setOnlyOneTask(boolean onlyOneTask) {
-		this.onlyOneTask = onlyOneTask;
+		this.mOnlyOneTask = onlyOneTask;
 	}
 
 	/**
@@ -117,9 +117,9 @@ public class UpdateDownLoaderUtils {
 	 * @return -1 表示出现异常或者没有这个方法
 	 */
 	public int pauseDownload(long... ids) {
-		if (downloadManager == null)
+		if (mDownloadManager == null)
 			return -1;
-		return downloadManagerPro.pauseDownload(ids);
+		return download_manager_pro.pauseDownload(ids);
 	}
 
 	/**
@@ -130,9 +130,9 @@ public class UpdateDownLoaderUtils {
 	 * @return 实际取消的编号
 	 */
 	public int cancelCurrentTask(long... ids) {
-		if (downloadManager == null)
+		if (mDownloadManager == null)
 			return 0;
-		return downloadManager.remove(ids);
+		return mDownloadManager.remove(ids);
 	}
 
 	/**
@@ -142,9 +142,9 @@ public class UpdateDownLoaderUtils {
 	 * @return-1 表示出现异常或者没有这个方法
 	 */
 	public int resumeDownload(long... ids) {
-		if (downloadManager == null)
+		if (mDownloadManager == null)
 			return -1;
-		return downloadManagerPro.resumeDownload(ids);
+		return download_manager_pro.resumeDownload(ids);
 	}
 
 	/**
@@ -160,13 +160,13 @@ public class UpdateDownLoaderUtils {
 	 * 设置是否有通知栏</br>
 	 * 如果要取消通知栏，需要添加权限android.permission.DOWNLOAD_WITHOUT_NOTIFICATION
 	 * 
-	 * @param notifycationVisible
+	 * @param visibilityVisibleNotifyCompleted
 	 *            </br> DownloadManager.Request.
 	 *            VISIBILITY_VISIBLE_NOTIFY_COMPLETED表示下载完成后显示通知栏提示</br>
 	 *            DownloadManager.Request.VISIBILITY_HIDDEN反之，需要添加权限
 	 */
-	public void setNotifycationVisible(int notifycationVisible) {
-		this.notifycationVisible = notifycationVisible;
+	public void setVisibilityVisibleNotifyCompleted (int visibilityVisibleNotifyCompleted) {
+		this.mVisibilityVisibleNotifyCompleted = visibilityVisibleNotifyCompleted;
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class UpdateDownLoaderUtils {
 			i.setDataAndType(Uri.parse("file://" + filePath),
 					"application/vnd.android.package-archive");
 			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			context.startActivity(i);
+			mContext.startActivity(i);
 			android.os.Process.killProcess(android.os.Process.myPid());
 			return true;
 		}
@@ -212,12 +212,12 @@ public class UpdateDownLoaderUtils {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			/**
-			 * 获取安装成功的 apk downloadId，然后安装
+			 * 获取安装成功的 apk download_id，然后安装
 			 **/
 			long completeDownloadId = intent.getLongExtra(
 					DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-			if (completeDownloadId == downloadId) {
-				if (downloadManagerPro.getStatusById(downloadId) == DownloadManager.STATUS_SUCCESSFUL) {
+			if (completeDownloadId == download_id) {
+				if (download_manager_pro.getStatusById(download_id) == DownloadManager.STATUS_SUCCESSFUL) {
 					String apkFilePath = new StringBuilder(Environment
 							.getExternalStorageDirectory().getAbsolutePath())
 							.append(File.separator)
@@ -247,9 +247,9 @@ public class UpdateDownLoaderUtils {
 	}
 
 	public static void unregisterContentObserver(Context context) {
-		if (context != null && downloadObserver != null) {
+		if (context != null && download_observer != null) {
 			context.getContentResolver().unregisterContentObserver(
-					downloadObserver);
+					download_observer);
 		}
 	}
 
@@ -259,7 +259,7 @@ public class UpdateDownLoaderUtils {
 	 * @param description
 	 */
 	public void setDescription(String description) {
-		this.description = description;
+		this.mDescription = description;
 	}
 
 	/**
@@ -268,7 +268,7 @@ public class UpdateDownLoaderUtils {
 	 * @param descriptionTitle
 	 */
 	public void setDescriptionTitle(String descriptionTitle) {
-		this.descriptionTitle = descriptionTitle;
+		this.mDescriptionTitle = descriptionTitle;
 	}
 	
 	static final DecimalFormat DOUBLE_DECIMAL_FORMAT = new DecimalFormat("0.##");
@@ -316,7 +316,7 @@ public class UpdateDownLoaderUtils {
 	}
 
 	private void updateView() {
-		int[] bytesAndStatus = downloadManagerPro.getBytesAndStatus(downloadId);
+		int[] bytesAndStatus = download_manager_pro.getBytesAndStatus(download_id);
 		UpdateDownLoaderUtils.downloaderCallbackListener.downloadSizeChange(bytesAndStatus[0], bytesAndStatus[1], bytesAndStatus[2]);
 	}
 
