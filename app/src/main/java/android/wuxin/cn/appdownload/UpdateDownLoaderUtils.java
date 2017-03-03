@@ -152,7 +152,7 @@ public class UpdateDownLoaderUtils {
 	 * 
 	 * @param download_floder_name
 	 */
-	public static void setDownload_floder_name(String download_floder_name) {
+	public static void setDownloadFloderName(String download_floder_name) {
 		UpdateDownLoaderUtils.download_floder_name = download_floder_name;
 	}
 
